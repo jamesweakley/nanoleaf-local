@@ -9,6 +9,7 @@ import os
 import sys
 import asyncio
 import json
+from typing import Optional
 from nanoleaf_coap import NanoleafCoAPClient
 
 
@@ -120,6 +121,19 @@ async def run_all_tests(client: NanoleafCoAPClient):
 
 async def interactive_mode(client: NanoleafCoAPClient):
     """Run in interactive mode."""
+    
+    def get_validated_int(prompt: str, min_val: int, max_val: int) -> Optional[int]:
+        """Get a validated integer input from user."""
+        try:
+            value = int(input(prompt))
+            if not min_val <= value <= max_val:
+                print(f"Error: Value must be between {min_val} and {max_val}")
+                return None
+            return value
+        except ValueError:
+            print("Error: Please enter a valid integer")
+            return None
+    
     print("\n" + "="*60)
     print("Interactive Mode")
     print("="*60)
@@ -151,36 +165,19 @@ async def interactive_mode(client: NanoleafCoAPClient):
             elif command == "off" or command == "4":
                 await test_power_off(client)
             elif command == "brightness" or command == "5":
-                try:
-                    brightness = int(input("Enter brightness (0-100): "))
-                    if not 0 <= brightness <= 100:
-                        print("Error: Brightness must be between 0 and 100")
-                        continue
+                brightness = get_validated_int("Enter brightness (0-100): ", 0, 100)
+                if brightness is not None:
                     await test_brightness(client, brightness)
-                except ValueError:
-                    print("Error: Please enter a valid integer")
             elif command == "ct" or command == "6":
-                try:
-                    temp = int(input("Enter color temperature (2700-6500K): "))
-                    if not 2700 <= temp <= 6500:
-                        print("Error: Color temperature must be between 2700K and 6500K")
-                        continue
+                temp = get_validated_int("Enter color temperature (2700-6500K): ", 2700, 6500)
+                if temp is not None:
                     await test_color_temperature(client, temp)
-                except ValueError:
-                    print("Error: Please enter a valid integer")
             elif command == "hue" or command == "7":
-                try:
-                    hue = int(input("Enter hue (0-360): "))
-                    if not 0 <= hue <= 360:
-                        print("Error: Hue must be between 0 and 360")
-                        continue
-                    sat = int(input("Enter saturation (0-100): "))
-                    if not 0 <= sat <= 100:
-                        print("Error: Saturation must be between 0 and 100")
-                        continue
-                    await test_hue_saturation(client, hue, sat)
-                except ValueError:
-                    print("Error: Please enter a valid integer")
+                hue = get_validated_int("Enter hue (0-360): ", 0, 360)
+                if hue is not None:
+                    sat = get_validated_int("Enter saturation (0-100): ", 0, 100)
+                    if sat is not None:
+                        await test_hue_saturation(client, hue, sat)
             elif command == "get" or command == "8":
                 path = input("Enter path (e.g., /api/v1/info): ")
                 response = await client.get(path)

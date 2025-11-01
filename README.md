@@ -8,6 +8,10 @@ This project provides a Python-based test rig for controlling Nanoleaf downlight
 
 Nanoleaf downlights support CoAP communication over Thread, as documented in the [nanoleaf-ltpdu](https://github.com/roysjosh/nanoleaf-ltpdu) repository. This project leverages that capability using Python's `aiocoap` library.
 
+## Quick Start
+
+**New to this project?** Check out the [Getting Started Guide](GETTING_STARTED.md) for a step-by-step walkthrough!
+
 ## Prerequisites
 
 - Python 3.7 or higher

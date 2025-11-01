@@ -129,8 +129,8 @@ async def interactive_mode(client: NanoleafCoAPClient):
     print("  3. on         - Turn on the device")
     print("  4. off        - Turn off the device")
     print("  5. brightness - Set brightness (0-100)")
-    print("  6. ct         - Set color temperature (K)")
-    print("  7. hue        - Set hue and saturation")
+    print("  6. ct         - Set color temperature (2700-6500K)")
+    print("  7. hue        - Set hue (0-360) and saturation (0-100)")
     print("  8. get        - Custom GET request")
     print("  9. put        - Custom PUT request")
     print("  0. quit       - Exit interactive mode")
@@ -151,15 +151,36 @@ async def interactive_mode(client: NanoleafCoAPClient):
             elif command == "off" or command == "4":
                 await test_power_off(client)
             elif command == "brightness" or command == "5":
-                brightness = int(input("Enter brightness (0-100): "))
-                await test_brightness(client, brightness)
+                try:
+                    brightness = int(input("Enter brightness (0-100): "))
+                    if not 0 <= brightness <= 100:
+                        print("Error: Brightness must be between 0 and 100")
+                        continue
+                    await test_brightness(client, brightness)
+                except ValueError:
+                    print("Error: Please enter a valid integer")
             elif command == "ct" or command == "6":
-                temp = int(input("Enter color temperature (K): "))
-                await test_color_temperature(client, temp)
+                try:
+                    temp = int(input("Enter color temperature (2700-6500K): "))
+                    if not 2700 <= temp <= 6500:
+                        print("Error: Color temperature must be between 2700K and 6500K")
+                        continue
+                    await test_color_temperature(client, temp)
+                except ValueError:
+                    print("Error: Please enter a valid integer")
             elif command == "hue" or command == "7":
-                hue = int(input("Enter hue (0-360): "))
-                sat = int(input("Enter saturation (0-100): "))
-                await test_hue_saturation(client, hue, sat)
+                try:
+                    hue = int(input("Enter hue (0-360): "))
+                    if not 0 <= hue <= 360:
+                        print("Error: Hue must be between 0 and 360")
+                        continue
+                    sat = int(input("Enter saturation (0-100): "))
+                    if not 0 <= sat <= 100:
+                        print("Error: Saturation must be between 0 and 100")
+                        continue
+                    await test_hue_saturation(client, hue, sat)
+                except ValueError:
+                    print("Error: Please enter a valid integer")
             elif command == "get" or command == "8":
                 path = input("Enter path (e.g., /api/v1/info): ")
                 response = await client.get(path)
